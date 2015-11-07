@@ -317,6 +317,7 @@ template <> struct MappingTraits<FormatStyle::BraceWrappingFlags> {
     IO.mapOptional("AfterStruct", Wrapping.AfterStruct);
     IO.mapOptional("AfterUnion", Wrapping.AfterUnion);
     IO.mapOptional("BeforeCatch", Wrapping.BeforeCatch);
+    IO.mapOptional("AfterIf", Wrapping.AfterIf);
     IO.mapOptional("BeforeElse", Wrapping.BeforeElse);
     IO.mapOptional("IndentBraces", Wrapping.IndentBraces);
   }
@@ -389,7 +390,7 @@ static FormatStyle expandPresets(const FormatStyle &Style) {
     return Style;
   FormatStyle Expanded = Style;
   Expanded.BraceWrapping = {false, false, false, false, false, false,
-                            false, false, false, false, false};
+                            false, false, false, false, false, false};
   switch (Style.BreakBeforeBraces) {
   case FormatStyle::BS_Linux:
     Expanded.BraceWrapping.AfterClass = true;

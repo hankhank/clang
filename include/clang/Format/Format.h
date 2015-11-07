@@ -236,6 +236,8 @@ struct FormatStyle {
     bool AfterUnion;
     /// \brief Wrap before \c catch.
     bool BeforeCatch;
+    /// \brief Wrap after \c if.
+    bool AfterIf;
     /// \brief Wrap before \c else.
     bool BeforeElse;
     /// \brief Indent the wrapped braces themselves.
