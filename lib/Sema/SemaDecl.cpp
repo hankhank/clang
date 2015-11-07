@@ -3352,7 +3352,7 @@ void Sema::MergeVarDecl(VarDecl *New, LookupResult &Previous) {
       !TemplateParameterListsAreEqual(NewTemplate->getTemplateParameters(),
                                       OldTemplate->getTemplateParameters(),
                                       /*Complain=*/true, TPL_TemplateMatch))
-    return;
+    return New->setInvalidDecl();
 
   // C++ [class.mem]p1:
   //   A member shall not be declared twice in the member-specification [...]
@@ -8220,7 +8220,7 @@ bool Sema::CheckFunctionDeclaration(Scope *S, FunctionDecl *NewFD,
     // there's no more work to do here; we'll just add the new
     // function to the scope.
     if (!AllowOverloadingOfFunction(Previous, Context)) {
-      NamedDecl *Candidate = Previous.getFoundDecl();
+      NamedDecl *Candidate = Previous.getRepresentativeDecl();
       if (shouldLinkPossiblyHiddenDecl(Candidate, NewFD)) {
         Redeclaration = true;
         OldDecl = Candidate;
@@ -13076,9 +13076,8 @@ bool Sema::CheckNontrivialField(FieldDecl *FD) {
           SourceLocation Loc = FD->getLocation();
           if (getSourceManager().isInSystemHeader(Loc)) {
             if (!FD->hasAttr<UnavailableAttr>())
-              FD->addAttr(UnavailableAttr::CreateImplicit(Context,
-                                  "this system field has retaining ownership",
-                                  Loc));
+              FD->addAttr(UnavailableAttr::CreateImplicit(Context, "",
+                            UnavailableAttr::IR_ARCFieldWithOwnership, Loc));
             return false;
           }
         }
@@ -13447,9 +13446,8 @@ void Sema::ActOnFields(Scope *S, SourceLocation RecLoc, Decl *EnclosingDecl,
         SourceLocation loc = FD->getLocation();
         if (getSourceManager().isInSystemHeader(loc)) {
           if (!FD->hasAttr<UnavailableAttr>()) {
-            FD->addAttr(UnavailableAttr::CreateImplicit(Context,
-                              "this system field has retaining ownership",
-                              loc));
+            FD->addAttr(UnavailableAttr::CreateImplicit(Context, "",
+                          UnavailableAttr::IR_ARCFieldWithOwnership, loc));
           }
         } else {
           Diag(FD->getLocation(), diag::err_arc_objc_object_in_tag) 
@@ -14013,6 +14011,7 @@ static bool ValidDuplicateEnum(EnumConstantDecl *ECD, EnumDecl *Enum) {
   return false;
 }
 
+namespace {
 struct DupKey {
   int64_t val;
   bool isTombstoneOrEmptyKey;
@@ -14036,6 +14035,7 @@ struct DenseMapInfoDupKey {
            LHS.val == RHS.val;
   }
 };
+} // end anonymous namespace
 
 // Emits a warning when an element is implicitly set a value that
 // a previous element has already been set to.

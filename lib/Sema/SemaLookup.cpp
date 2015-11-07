@@ -474,7 +474,7 @@ void LookupResult::resolveKind() {
     D = cast<NamedDecl>(D->getCanonicalDecl());
 
     // Ignore an invalid declaration unless it's the only one left.
-    if (D->isInvalidDecl() && I < N-1) {
+    if (D->isInvalidDecl() && !(I == 0 && N == 1)) {
       Decls[I] = Decls[--N];
       continue;
     }
@@ -625,6 +625,11 @@ static bool LookupBuiltin(Sema &S, LookupResult &R) {
         // libstdc++4.7's type_traits expects type __float128 to exist, so
         // insert a dummy type to make that header build in gnu++11 mode.
         R.addDecl(S.getASTContext().getFloat128StubType());
+        return true;
+      }
+      if (S.getLangOpts().CPlusPlus && NameKind == Sema::LookupOrdinaryName &&
+          II == S.getASTContext().getMakeIntegerSeqName()) {
+        R.addDecl(S.getASTContext().getMakeIntegerSeqDecl());
         return true;
       }
 

@@ -366,8 +366,10 @@ const RawComment *ASTContext::getRawCommentForAnyRedecl(
       OriginalDeclForRC = I;
       RawCommentAndCacheFlags Raw;
       if (RC) {
-        Raw.setRaw(RC);
+        // Call order swapped to work around ICE in VS2015 RTM (Release Win32)
+        // https://connect.microsoft.com/VisualStudio/feedback/details/1741530
         Raw.setKind(RawCommentAndCacheFlags::FromDecl);
+        Raw.setRaw(RC);
       } else
         Raw.setKind(RawCommentAndCacheFlags::NoCommentInDecl);
       Raw.setOriginalDecl(I);
@@ -681,6 +683,7 @@ CXXABI *ASTContext::createCXXABI(const TargetInfo &T) {
   case TargetCXXABI::GenericARM: // Same as Itanium at this level
   case TargetCXXABI::iOS:
   case TargetCXXABI::iOS64:
+  case TargetCXXABI::WatchOS:
   case TargetCXXABI::GenericAArch64:
   case TargetCXXABI::GenericMIPS:
   case TargetCXXABI::GenericItanium:
@@ -741,7 +744,7 @@ ASTContext::ASTContext(LangOptions &LOpts, SourceManager &SM,
       ucontext_tDecl(nullptr), BlockDescriptorType(nullptr),
       BlockDescriptorExtendedType(nullptr), cudaConfigureCallDecl(nullptr),
       FirstLocalImport(), LastLocalImport(), ExternCContext(nullptr),
-      SourceMgr(SM), LangOpts(LOpts),
+      MakeIntegerSeqDecl(nullptr), SourceMgr(SM), LangOpts(LOpts),
       SanitizerBL(new SanitizerBlacklist(LangOpts.SanitizerBlacklistFiles, SM)),
       AddrSpaceMap(nullptr), Target(nullptr), AuxTarget(nullptr),
       PrintingPolicy(LOpts), Idents(idents), Selectors(sels),
@@ -908,6 +911,24 @@ ExternCContextDecl *ASTContext::getExternCContextDecl() const {
     ExternCContext = ExternCContextDecl::Create(*this, getTranslationUnitDecl());
 
   return ExternCContext;
+}
+
+BuiltinTemplateDecl *
+ASTContext::buildBuiltinTemplateDecl(BuiltinTemplateKind BTK,
+                                     const IdentifierInfo *II) const {
+  auto *BuiltinTemplate = BuiltinTemplateDecl::Create(*this, TUDecl, II, BTK);
+  BuiltinTemplate->setImplicit();
+  TUDecl->addDecl(BuiltinTemplate);
+
+  return BuiltinTemplate;
+}
+
+BuiltinTemplateDecl *
+ASTContext::getMakeIntegerSeqDecl() const {
+  if (!MakeIntegerSeqDecl)
+    MakeIntegerSeqDecl = buildBuiltinTemplateDecl(BTK__make_integer_seq,
+                                                  getMakeIntegerSeqName());
+  return MakeIntegerSeqDecl;
 }
 
 RecordDecl *ASTContext::buildImplicitRecord(StringRef Name,
@@ -8494,6 +8515,7 @@ MangleContext *ASTContext::createMangleContext() {
   case TargetCXXABI::iOS:
   case TargetCXXABI::iOS64:
   case TargetCXXABI::WebAssembly:
+  case TargetCXXABI::WatchOS:
     return ItaniumMangleContext::create(*this, getDiagnostics());
   case TargetCXXABI::Microsoft:
     return MicrosoftMangleContext::create(*this, getDiagnostics());
@@ -8774,11 +8796,11 @@ createDynTypedNode(const NestedNameSpecifierLoc &Node) {
           if (!NodeOrVector.template is<ASTContext::ParentVector *>()) {
             auto *Vector = new ASTContext::ParentVector(
                 1, getSingleDynTypedNodeFromParentMap(NodeOrVector));
-            NodeOrVector = Vector;
             if (auto *Node =
                     NodeOrVector
                         .template dyn_cast<ast_type_traits::DynTypedNode *>())
               delete Node;
+            NodeOrVector = Vector;
           }
 
           auto *Vector =
