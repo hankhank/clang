@@ -406,6 +406,9 @@ struct FormatStyle {
 
   /// \brief The indentation used for namespaces.
   NamespaceIndentationKind NamespaceIndentation;
+    
+  /// \brief Place namespace declaration on single line
+  bool NamespaceOnSingleLine;
 
   /// \brief The number of characters to use for indentation of ObjC blocks.
   unsigned ObjCBlockIndentWidth;

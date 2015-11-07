@@ -157,6 +157,10 @@ private:
   // whether we are in a compound statement or not.
   std::vector<bool> DeclarationScopeStack;
 
+  // We store how deep into nested namespaces we currently are and 
+  // how deep we went. first=max second=current
+  std::pair<int, int> NamespaceScopeDepth;
+
   const FormatStyle &Style;
   const AdditionalKeywords &Keywords;
 

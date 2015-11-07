@@ -551,9 +551,7 @@ private:
     case tok::r_square:
       return false;
     case tok::r_brace:
-      // Lines can start with '}'.
-      if (Tok->Previous)
-        return false;
+      //// Lines can start with '}'.
       break;
     case tok::greater:
       Tok->Type = TT_BinaryOperator;
@@ -1936,6 +1934,9 @@ bool TokenAnnotator::spaceRequiredBetween(const AnnotatedLine &Line,
     return false;
   if (Left.is(TT_TemplateCloser) && Right.is(tok::l_square))
     return false;
+  // namespace single line
+  if (Left.is(tok::r_brace) && Right.is(tok::r_brace))
+    return false;
   return true;
 }
 
@@ -2063,6 +2064,10 @@ bool TokenAnnotator::spaceRequiredBefore(const AnnotatedLine &Line,
     return false;
   if (Left.is(TT_RegexLiteral))
     return false;
+  if ((Line.startsWith(tok::kw_namespace) || 
+      Line.startsWith(tok::kw_inline, tok::kw_namespace)) && 
+      (Left.is(tok::l_brace) || Right.is(tok::l_brace))) // namespace single line
+    return true;
   return spaceRequiredBetween(Line, Left, Right);
 }
 

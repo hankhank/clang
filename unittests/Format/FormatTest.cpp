@@ -2222,6 +2222,10 @@ TEST_F(FormatTest, FormatsNamespaces) {
                    "} // namespace\n"
                    "} // namespace",
                    Style));
+
+  Style.NamespaceIndentation = FormatStyle::NI_None;
+  Style.NamespaceOnSingleLine = true;
+  verifyFormat("namespace a { namespace b {\nint i;\n}}", Style);
 }
 
 TEST_F(FormatTest, FormatsExternC) { verifyFormat("extern \"C\" {\nint a;"); }

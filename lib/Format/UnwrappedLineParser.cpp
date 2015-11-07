@@ -55,6 +55,23 @@ private:
   std::vector<bool> &Stack;
 };
 
+class ScopedNamespaceDepth {
+public:
+  ScopedNamespaceDepth(std::pair<int, int> &Depth)
+      : Depth(Depth) {
+    Depth.first++;  // max
+    Depth.second++; // current
+  }
+  ~ScopedNamespaceDepth() {
+    Depth.second--; // current
+    if (Depth.second == 0) // Out of namespaces reset max
+      Depth.first = 0;
+  }
+
+private:
+    std::pair<int, int> &Depth;
+};
+
 class ScopedMacroState : public FormatTokenSource {
 public:
   ScopedMacroState(UnwrappedLine &Line, FormatTokenSource *&TokenSource,
@@ -410,7 +427,9 @@ void UnwrappedLineParser::parseBlock(bool MustBeDeclaration, bool AddLevel,
   if (MacroBlock && FormatTok->is(tok::l_paren))
     parseParens();
 
-  addUnwrappedLine();
+  // namespace single line
+  if (!Style.NamespaceOnSingleLine || !FormatTok->is(tok::kw_namespace))
+    addUnwrappedLine();
 
   ScopedDeclarationState DeclarationState(*Line, DeclarationScopeStack,
                                           MustBeDeclaration);
@@ -422,6 +441,14 @@ void UnwrappedLineParser::parseBlock(bool MustBeDeclaration, bool AddLevel,
                  : !FormatTok->is(tok::r_brace)) {
     Line->Level = InitialLevel;
     return;
+  }
+
+  // namespace single line
+  if (Style.NamespaceOnSingleLine && 
+    (NamespaceScopeDepth.first == NamespaceScopeDepth.second))
+  {
+    FormatTok->MustBreakBefore = true;
+    addUnwrappedLine();
   }
 
   nextToken(); // Munch the closing brace.
@@ -1376,12 +1403,26 @@ void UnwrappedLineParser::parseNamespace() {
     bool AddLevel = Style.NamespaceIndentation == FormatStyle::NI_All ||
                     (Style.NamespaceIndentation == FormatStyle::NI_Inner &&
                      DeclarationScopeStack.size() > 1);
+
+    ScopedNamespaceDepth namespaceDepth(NamespaceScopeDepth);
+
     parseBlock(/*MustBeDeclaration=*/true, AddLevel);
     // Munch the semicolon after a namespace. This is more common than one would
     // think. Puttin the semicolon into its own line is very ugly.
     if (FormatTok->Tok.is(tok::semi))
       nextToken();
-    addUnwrappedLine();
+
+    // namespace single line
+    if (Style.NamespaceOnSingleLine && 
+        (NamespaceScopeDepth.second == 1))
+    {
+      addUnwrappedLine();
+      FormatTok->MustBreakBefore = true;
+    }
+    else if(!Style.NamespaceOnSingleLine)
+    {
+      addUnwrappedLine();
+    }
   }
   // FIXME: Add error handling.
 }
