@@ -23,11 +23,7 @@ namespace a { namespace b { namespace c {
 ### BraceWrapping::AfterIfElse
 
 An extension of the custom BraceWrapping style intended to be used inconjunction with `BraceWrapping::BeforeElse`
-To use you must set `BreakBeforeBraces: Custom` and 
-```
-BraceWrapping:   
-  AfterIfElse:     true
-```
+To use you must set `BreakBeforeBraces: Custom` and ` raceWrapping: AfterIfElse: true`
 
 example with BeforeElse and AfterIfElse enabled
 ```
