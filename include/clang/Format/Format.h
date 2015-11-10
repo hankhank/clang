@@ -428,8 +428,18 @@ struct FormatStyle {
   /// \brief The indentation used for namespaces.
   NamespaceIndentationKind NamespaceIndentation;
     
+  /// \brief Different ways to break namespaces
+  enum NamespaceOnSingleLineKind {
+    /// All namespaces are broken
+    NS_None,
+    /// All namespaces except anonymous
+    NS_ExceptAnonymous,
+    /// All namespaces are on a single line
+    NS_All
+  };
+
   /// \brief Place namespace declaration on single line
-  bool NamespaceOnSingleLine;
+  NamespaceOnSingleLineKind NamespaceOnSingleLine;
 
   /// \brief The number of characters to use for indentation of ObjC blocks.
   unsigned ObjCBlockIndentWidth;

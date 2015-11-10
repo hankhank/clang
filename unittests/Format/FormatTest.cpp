@@ -2231,8 +2231,14 @@ TEST_F(FormatTest, FormatsNamespaces) {
                    Style));
 
   Style.NamespaceIndentation = FormatStyle::NI_None;
-  Style.NamespaceOnSingleLine = true;
+  Style.NamespaceOnSingleLine = FormatStyle::NS_All;
   verifyFormat("namespace a { namespace b {\nint i;\n}}", Style);
+  verifyFormat("namespace {\nint i;\n}", Style);
+
+  Style.NamespaceOnSingleLine = FormatStyle::NS_ExceptAnonymous;
+  verifyFormat("namespace a { namespace b {\nint i;\n}}", Style);
+
+  verifyFormat("namespace\n{\nint i;\n}", Style);
 }
 
 TEST_F(FormatTest, FormatsExternC) { verifyFormat("extern \"C\" {\nint a;"); }

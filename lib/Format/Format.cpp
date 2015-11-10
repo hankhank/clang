@@ -128,6 +128,16 @@ struct ScalarEnumerationTraits<FormatStyle::NamespaceIndentationKind> {
   }
 };
 
+template <>
+struct ScalarEnumerationTraits<FormatStyle::NamespaceOnSingleLineKind> {
+  static void enumeration(IO &IO,
+                          FormatStyle::NamespaceOnSingleLineKind &Value) {
+    IO.enumCase(Value, "None", FormatStyle::NS_None);
+    IO.enumCase(Value, "ExceptAnonymous", FormatStyle::NS_ExceptAnonymous);
+    IO.enumCase(Value, "All", FormatStyle::NS_All);
+  }
+};
+
 template <> struct ScalarEnumerationTraits<FormatStyle::BracketAlignmentStyle> {
   static void enumeration(IO &IO, FormatStyle::BracketAlignmentStyle &Value) {
     IO.enumCase(Value, "Align", FormatStyle::BAS_Align);
@@ -483,7 +493,7 @@ FormatStyle getLLVMStyle() {
   LLVMStyle.MaxEmptyLinesToKeep = 1;
   LLVMStyle.KeepEmptyLinesAtTheStartOfBlocks = true;
   LLVMStyle.NamespaceIndentation = FormatStyle::NI_None;
-  LLVMStyle.NamespaceOnSingleLine = false;
+  LLVMStyle.NamespaceOnSingleLine = FormatStyle::NS_None;
   LLVMStyle.ObjCBlockIndentWidth = 2;
   LLVMStyle.ObjCSpaceAfterProperty = false;
   LLVMStyle.ObjCSpaceBeforeProtocolList = true;

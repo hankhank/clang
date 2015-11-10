@@ -428,7 +428,7 @@ void UnwrappedLineParser::parseBlock(bool MustBeDeclaration, bool AddLevel,
     parseParens();
 
   // namespace single line
-  if (!Style.NamespaceOnSingleLine || !FormatTok->is(tok::kw_namespace))
+  if (Style.NamespaceOnSingleLine == FormatStyle::NS_None || !FormatTok->is(tok::kw_namespace))
     addUnwrappedLine();
 
   ScopedDeclarationState DeclarationState(*Line, DeclarationScopeStack,
@@ -444,7 +444,7 @@ void UnwrappedLineParser::parseBlock(bool MustBeDeclaration, bool AddLevel,
   }
 
   // namespace single line
-  if (Style.NamespaceOnSingleLine && 
+  if (Style.NamespaceOnSingleLine != FormatStyle::NS_None && 
     (NamespaceScopeDepth.first == NamespaceScopeDepth.second))
   {
     FormatTok->MustBreakBefore = true;
@@ -1396,12 +1396,16 @@ void UnwrappedLineParser::parseTryCatch() {
 void UnwrappedLineParser::parseNamespace() {
   assert(FormatTok->Tok.is(tok::kw_namespace) && "'namespace' expected");
 
+  bool AnonNamespace = true;
   const FormatToken &InitialToken = *FormatTok;
   nextToken();
-  while (FormatTok->isOneOf(tok::identifier, tok::coloncolon))
+  while (FormatTok->isOneOf(tok::identifier, tok::coloncolon)) {
     nextToken();
+	AnonNamespace = false;
+  }
   if (FormatTok->Tok.is(tok::l_brace)) {
-    if (ShouldBreakBeforeBrace(Style, InitialToken))
+    if (ShouldBreakBeforeBrace(Style, InitialToken) || 
+		(AnonNamespace && Style.NamespaceOnSingleLine == FormatStyle::NS_ExceptAnonymous))
       addUnwrappedLine();
 
     bool AddLevel = Style.NamespaceIndentation == FormatStyle::NI_All ||
@@ -1417,13 +1421,12 @@ void UnwrappedLineParser::parseNamespace() {
       nextToken();
 
     // namespace single line
-    if (Style.NamespaceOnSingleLine && 
-        (NamespaceScopeDepth.second == 1))
+    if (Style.NamespaceOnSingleLine != FormatStyle::NS_None && (NamespaceScopeDepth.second == 1))
     {
       addUnwrappedLine();
       FormatTok->MustBreakBefore = true;
     }
-    else if(!Style.NamespaceOnSingleLine)
+    else if (Style.NamespaceOnSingleLine == FormatStyle::NS_None)
     {
       addUnwrappedLine();
     }

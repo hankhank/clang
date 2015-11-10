@@ -9,15 +9,27 @@ See http://clang.llvm.org/docs/ClangFormatStyleOptions.html for the default list
 
 ### NamespaceOnSingleLine
 
-If set to true all namespace blocks will occur on a single line
+Controls whether a namespace is all on a single line. It supports
+* None - All namespaces will be on a separate line
+* ExceptAnonymous - All namespaces will be on single line except anonymous namespace braces
+* All - All namespaces will be on a single line
 
-To use you must set `NamespaceOnSingleLine: true`
-
-example
+All example
 ```
 namespace a { namespace b { namespace c {
    
-}}};
+}}}
+```
+
+ExceptAnonymous example
+```
+namespace
+{
+}
+
+namespace a { namespace b { namespace c {
+   
+}}}
 ```
 
 ### BraceWrapping::AfterIfElse
