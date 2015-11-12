@@ -562,6 +562,10 @@ the configuration (without a prefix: ``Auto``).
 **SpaceAfterCStyleCast** (``bool``)
   If ``true``, a space may be inserted after C style casts.
 
+**SpaceAfterTemplateKeyword** (``bool``)
+  If ``true``, a space may be inserted between the 'template' keyword
+  and the following '<'.
+
 **SpaceBeforeAssignmentOperators** (``bool``)
   If ``false``, spaces will be removed before assignment operators.
 

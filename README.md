@@ -49,3 +49,9 @@ else
 {
 }
 ```
+
+### SpaceAfterTemplateKeyword
+If `true`, a space may be inserted between the 'template' keyword and the following '<'.
+```
+template<> class Foo<int> {}
+```

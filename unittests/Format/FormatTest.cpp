@@ -5664,6 +5664,17 @@ TEST_F(FormatTest, UnderstandsEllipsis) {
   verifyFormat("template <class... Ts> void Foo(Ts*... ts) {}", PointersLeft);
 }
 
+TEST_F(FormatTest, SpaceAfterTemplate) {
+  FormatStyle Style = getLLVMStyle();
+  Style.SpaceAfterTemplateKeyword = false;
+  verifyFormat("template<> class Foo<int> {}", Style);
+  verifyFormat("template<> void Foo<int>() {}", Style);
+  verifyFormat("template<class... Ts> class Foo {}", Style);
+  verifyFormat("template<class... Ts> void Foo() {}", Style);
+  verifyFormat("template<typename T> class Foo {}", Style);
+  verifyFormat("template<typename T> void Foo() {}", Style);
+}
+
 TEST_F(FormatTest, AdaptivelyFormatsPointersAndReferences) {
   EXPECT_EQ("int *a;\n"
             "int *a;\n"
