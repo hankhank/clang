@@ -3,6 +3,9 @@
 This project is an extension of clang format to support more formatting styles
 than the upstream project is willing to take on.
 
+This branch is occasionally rebased against the upstream projects master branch but hankhank/llvm and hankhank/clang-tools-extra
+are always kept in step.
+
 ## Supported format styles
 
 See http://clang.llvm.org/docs/ClangFormatStyleOptions.html for the default list
@@ -52,6 +55,8 @@ else
 
 ### SpaceAfterTemplateKeyword
 If `true`, a space may be inserted between the 'template' keyword and the following '<'.
+
+example
 ```
 template<> class Foo<int> {}
 ```
