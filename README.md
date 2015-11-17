@@ -19,20 +19,20 @@ Controls whether a namespace is all on a single line. It supports
 
 All example
 ```
-namespace a { namespace b { namespace c {
-   
-}}}
+    namespace a { namespace b { namespace c {
+       
+    }}}
 ```
 
 ExceptAnonymous example
 ```
-namespace
-{
-}
-
-namespace a { namespace b { namespace c {
-   
-}}}
+    namespace
+    {
+    }
+    
+    namespace a { namespace b { namespace c {
+       
+    }}}
 ```
 
 ### BraceWrapping::AfterIfElse
@@ -42,15 +42,15 @@ To use you must set `BreakBeforeBraces: Custom` and ` raceWrapping: AfterIfElse:
 
 example with BeforeElse and AfterIfElse enabled
 ```
-if (cond_1)
-{
-}
-else if (cond_2)
-{
-}
-else
-{
-}
+     if (cond_1)
+     {
+     }
+     else if (cond_2)
+     {
+     }
+     else
+     {
+     }
 ```
 
 ### SpaceAfterTemplateKeyword
@@ -58,5 +58,5 @@ If `true`, a space may be inserted between the 'template' keyword and the follow
 
 example
 ```
-template<> class Foo<int> {}
+     template<> class Foo<int> {}
 ```
