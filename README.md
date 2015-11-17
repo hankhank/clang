@@ -18,14 +18,16 @@ Controls whether a namespace is all on a single line. It supports
 * All - All namespaces will be on a single line
 
 All example
-```
+
+`
     namespace a { namespace b { namespace c {
        
     }}}
-```
+`
 
 ExceptAnonymous example
-```
+
+`
     namespace
     {
     }
@@ -33,7 +35,7 @@ ExceptAnonymous example
     namespace a { namespace b { namespace c {
        
     }}}
-```
+`
 
 ### BraceWrapping::AfterIfElse
 
@@ -41,7 +43,8 @@ An extension of the custom BraceWrapping style intended to be used inconjunction
 To use you must set `BreakBeforeBraces: Custom` and ` raceWrapping: AfterIfElse: true`
 
 example with BeforeElse and AfterIfElse enabled
-```
+
+`
      if (cond_1)
      {
      }
@@ -51,12 +54,13 @@ example with BeforeElse and AfterIfElse enabled
      else
      {
      }
-```
+`
 
 ### SpaceAfterTemplateKeyword
 If `true`, a space may be inserted between the 'template' keyword and the following '<'.
 
 example
-```
+
+`
      template<> class Foo<int> {}
-```
+`
