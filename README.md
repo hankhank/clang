@@ -19,15 +19,12 @@ Controls whether a namespace is all on a single line. It supports
 
 All example
 
-`
     namespace a { namespace b { namespace c {
        
     }}}
-`
 
 ExceptAnonymous example
 
-`
     namespace
     {
     }
@@ -35,7 +32,6 @@ ExceptAnonymous example
     namespace a { namespace b { namespace c {
        
     }}}
-`
 
 ### BraceWrapping::AfterIfElse
 
@@ -44,7 +40,6 @@ To use you must set `BreakBeforeBraces: Custom` and ` raceWrapping: AfterIfElse:
 
 example with BeforeElse and AfterIfElse enabled
 
-`
      if (cond_1)
      {
      }
@@ -54,13 +49,10 @@ example with BeforeElse and AfterIfElse enabled
      else
      {
      }
-`
 
 ### SpaceAfterTemplateKeyword
 If `true`, a space may be inserted between the 'template' keyword and the following '<'.
 
 example
 
-`
      template<> class Foo<int> {}
-`
