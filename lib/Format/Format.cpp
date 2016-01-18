@@ -481,7 +481,7 @@ FormatStyle getLLVMStyle() {
   LLVMStyle.ColumnLimit = 80;
   LLVMStyle.CommentPragmas = "^ IWYU pragma:";
   LLVMStyle.ConstructorInitializerAllOnOneLineOrOnePerLine = false;
-  LLVMStyle.InheritanceAllOnOneLineOrOnePerLine = false;
+  LLVMStyle.InheritanceAllOnOneLineOrOnePerLine = true;
   LLVMStyle.ConstructorInitializerIndentWidth = 4;
   LLVMStyle.ContinuationIndentWidth = 4;
   LLVMStyle.Cpp11BracedListStyle = true;
@@ -542,7 +542,7 @@ FormatStyle getGoogleStyle(FormatStyle::LanguageKind Language) {
   GoogleStyle.AlwaysBreakBeforeMultilineStrings = true;
   GoogleStyle.AlwaysBreakTemplateDeclarations = true;
   GoogleStyle.ConstructorInitializerAllOnOneLineOrOnePerLine = true;
-  GoogleStyle.InheritanceAllOnOneLineOrOnePerLine = false;
+  GoogleStyle.InheritanceAllOnOneLineOrOnePerLine = true;
   GoogleStyle.DerivePointerAlignment = true;
   GoogleStyle.IncludeCategories = {{"^<.*\\.h>", 1}, {"^<.*", 2}, {".*", 3}};
   GoogleStyle.IndentCaseLabels = true;

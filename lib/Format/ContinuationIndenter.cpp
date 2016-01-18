@@ -48,11 +48,11 @@ static bool startsSegmentOfBuilderTypeCall(const FormatToken &Tok) {
 static bool startsNextParameter(const FormatToken &Current,
                                 const FormatStyle &Style) {
   const FormatToken &Previous = *Current.Previous;
-  if (Current.is(TT_CtorInitializerComma) &&
+  if (Current.isOneOf(TT_CtorInitializerComma, TT_InheritanceComma) &&
       Style.BreakConstructorInitializersBeforeComma)
     return true;
   return Previous.is(tok::comma) && !Current.isTrailingComment() &&
-         (Previous.isNot(TT_CtorInitializerComma) ||
+         (!Previous.isOneOf(TT_CtorInitializerComma, TT_InheritanceComma) ||
           !Style.BreakConstructorInitializersBeforeComma);
 }
 
@@ -163,11 +163,6 @@ bool ContinuationIndenter::mustBreak(const LineState &State) {
        State.Stack.back().BreakBeforeParameter) &&
       ((Style.AllowShortFunctionsOnASingleLine != FormatStyle::SFS_All) ||
        Style.BreakConstructorInitializersBeforeComma || Style.ColumnLimit != 0))
-    return true;
-  if (Current.is(TT_InheritanceColon) &&
-      (State.Column + State.Line->Last->TotalLength - Current.TotalLength + 2 >
-           getColumnLimit(State)) &&
-      (Style.BreakInheritanceBeforeComma || Style.ColumnLimit != 0))
     return true;
   if (Current.is(TT_SelectorName) && State.Stack.back().ObjCSelectorNameFound &&
       State.Stack.back().BreakBeforeParameter)

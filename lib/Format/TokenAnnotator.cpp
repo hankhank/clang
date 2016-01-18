@@ -879,13 +879,14 @@ private:
            Previous = Previous->Previous)
         Previous->Type = TT_PointerOrReference;
       if (Line.MustBeDeclaration)
-        Contexts.back().IsExpression = Contexts.front().InCtorInitializer;
+        Contexts.back().IsExpression = Contexts.front().InCtorInitializer || Contexts.back().InInheritance;
     } else if (Current.Previous &&
                Current.Previous->is(TT_CtorInitializerColon)) {
       Contexts.back().IsExpression = true;
       Contexts.back().InCtorInitializer = true;
     } else if (Current.Previous &&
                Current.Previous->is(TT_InheritanceColon)) {
+      Contexts.back().IsExpression = true;
       Contexts.back().InInheritance = true;
     } else if (Current.is(tok::kw_new)) {
       Contexts.back().CanBeExpression = false;
