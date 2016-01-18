@@ -48,11 +48,11 @@ static bool startsSegmentOfBuilderTypeCall(const FormatToken &Tok) {
 static bool startsNextParameter(const FormatToken &Current,
                                 const FormatStyle &Style) {
   const FormatToken &Previous = *Current.Previous;
-  if (Current.is(TT_CtorInitializerComma) &&
+  if (Current.isOneOf(TT_CtorInitializerComma, TT_InheritanceComma) &&
       Style.BreakConstructorInitializersBeforeComma)
     return true;
   return Previous.is(tok::comma) && !Current.isTrailingComment() &&
-         (Previous.isNot(TT_CtorInitializerComma) ||
+         (!Previous.isOneOf(TT_CtorInitializerComma, TT_InheritanceComma) ||
           !Style.BreakConstructorInitializersBeforeComma);
 }
 
@@ -157,7 +157,7 @@ bool ContinuationIndenter::mustBreak(const LineState &State) {
       getLengthToMatchingParen(Previous) + State.Column - 1 >
           getColumnLimit(State))
     return true;
-  if (Current.is(TT_CtorInitializerColon) &&
+  if (Current.isOneOf(TT_CtorInitializerColon, TT_InheritanceColon) &&
       (State.Column + State.Line->Last->TotalLength - Current.TotalLength + 2 >
            getColumnLimit(State) ||
        State.Stack.back().BreakBeforeParameter) &&
@@ -373,7 +373,7 @@ void ContinuationIndenter::addTokenOnCurrentLine(LineState &State, bool DryRun,
               (Previous.is(tok::colon) && Previous.is(TT_ObjCMethodExpr)))) {
     State.Stack.back().LastSpace = State.Column;
   } else if ((Previous.isOneOf(TT_BinaryOperator, TT_ConditionalExpr,
-                               TT_CtorInitializerColon)) &&
+                               TT_CtorInitializerColon, TT_InheritanceColon)) &&
              ((Previous.getPrecedence() != prec::Assignment &&
                (Previous.isNot(tok::lessless) || Previous.OperatorIndex != 0 ||
                 !Previous.LastOperator)) ||
@@ -649,7 +649,11 @@ unsigned ContinuationIndenter::getNewLineColumn(const LineState &State) {
     return ContinuationIndent;
   if (NextNonComment->is(TT_CtorInitializerColon))
     return State.FirstIndent + Style.ConstructorInitializerIndentWidth;
+  if (NextNonComment->is(TT_InheritanceColon))
+    return State.FirstIndent + Style.ConstructorInitializerIndentWidth;
   if (NextNonComment->is(TT_CtorInitializerComma))
+    return State.Stack.back().Indent;
+  if (NextNonComment->is(TT_InheritanceComma))
     return State.Stack.back().Indent;
   if (Previous.is(tok::r_paren) && !Current.isBinaryOperator() &&
       !Current.isOneOf(tok::colon, tok::comment))
@@ -699,7 +703,7 @@ unsigned ContinuationIndenter::moveStateToNextToken(LineState &State,
           State.FirstIndent + Style.ContinuationIndentWidth;
     }
   }
-  if (Current.is(TT_CtorInitializerColon)) {
+  if (Current.isOneOf(TT_CtorInitializerColon, TT_InheritanceColon)) {
     // Indent 2 from the column, so:
     // SomeClass::SomeClass()
     //     : First(...), ...

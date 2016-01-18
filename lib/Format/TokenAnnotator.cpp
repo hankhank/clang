@@ -591,6 +591,8 @@ private:
     case tok::comma:
       if (Contexts.back().InCtorInitializer)
         Tok->Type = TT_CtorInitializerComma;
+      else if (Contexts.back().InInheritance)
+        Tok->Type = TT_InheritanceComma;
       else if (Contexts.back().FirstStartOfName &&
                (Contexts.size() == 1 || Line.startsWith(tok::kw_for))) {
         Contexts.back().FirstStartOfName->PartOfMultiVariableDeclStmt = true;
@@ -807,6 +809,7 @@ private:
     bool CanBeExpression = true;
     bool InTemplateArgument = false;
     bool InCtorInitializer = false;
+    bool InInheritance = false;
     bool CaretFound = false;
     bool IsForEachMacro = false;
   };
@@ -876,11 +879,15 @@ private:
            Previous = Previous->Previous)
         Previous->Type = TT_PointerOrReference;
       if (Line.MustBeDeclaration)
-        Contexts.back().IsExpression = Contexts.front().InCtorInitializer;
+        Contexts.back().IsExpression = Contexts.front().InCtorInitializer || Contexts.back().InInheritance;
     } else if (Current.Previous &&
                Current.Previous->is(TT_CtorInitializerColon)) {
       Contexts.back().IsExpression = true;
       Contexts.back().InCtorInitializer = true;
+    } else if (Current.Previous &&
+               Current.Previous->is(TT_InheritanceColon)) {
+      Contexts.back().IsExpression = true;
+      Contexts.back().InInheritance = true;
     } else if (Current.is(tok::kw_new)) {
       Contexts.back().CanBeExpression = false;
     } else if (Current.isOneOf(tok::semi, tok::exclaim)) {
@@ -1578,7 +1585,7 @@ void TokenAnnotator::calculateFormattingInformation(AnnotatedLine &Line) {
           if (Parameter->isOneOf(tok::comment, tok::r_brace))
             break;
           if (Parameter->Previous && Parameter->Previous->is(tok::comma)) {
-            if (!Parameter->Previous->is(TT_CtorInitializerComma) &&
+            if (!Parameter->Previous->isOneOf(TT_CtorInitializerComma, TT_InheritanceComma) &&
                 Parameter->HasUnescapedNewline)
               Parameter->MustBreakBefore = true;
             break;
@@ -2155,6 +2162,10 @@ bool TokenAnnotator::mustBreakBefore(const AnnotatedLine &Line,
       Style.BreakConstructorInitializersBeforeComma &&
       !Style.ConstructorInitializerAllOnOneLineOrOnePerLine)
     return true;
+  if ((Right.isOneOf(TT_InheritanceComma, TT_InheritanceColon)) &&
+      Style.BreakConstructorInitializersBeforeComma &&
+      !Style.ConstructorInitializerAllOnOneLineOrOnePerLine)
+    return true;
   if (Right.is(tok::string_literal) && Right.TokenText.startswith("R\""))
     // Raw string literals are special wrt. line breaks. The author has made a
     // deliberate choice and might have aligned the contents of the string
@@ -2233,10 +2244,8 @@ bool TokenAnnotator::canBreakBefore(const AnnotatedLine &Line,
     return Style.BreakBeforeTernaryOperators;
   if (Left.is(TT_ConditionalExpr) || Left.is(tok::question))
     return !Style.BreakBeforeTernaryOperators;
-  if (Right.is(TT_InheritanceColon))
-    return true;
   if (Right.is(tok::colon) &&
-      !Right.isOneOf(TT_CtorInitializerColon, TT_InlineASMColon))
+      !Right.isOneOf(TT_CtorInitializerColon, TT_InheritanceColon, TT_InlineASMColon))
     return false;
   if (Left.is(tok::colon) && (Left.isOneOf(TT_DictLiteral, TT_ObjCMethodExpr)))
     return true;
@@ -2298,6 +2307,12 @@ bool TokenAnnotator::canBreakBefore(const AnnotatedLine &Line,
       Style.BreakConstructorInitializersBeforeComma)
     return false;
   if (Right.is(TT_CtorInitializerComma) &&
+      Style.BreakConstructorInitializersBeforeComma)
+    return true;
+  if (Left.is(TT_InheritanceComma) &&
+      Style.BreakConstructorInitializersBeforeComma)
+    return false;
+  if (Right.is(TT_InheritanceComma) &&
       Style.BreakConstructorInitializersBeforeComma)
     return true;
   if ((Left.is(tok::greater) && Right.is(tok::greater)) ||
