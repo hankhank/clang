@@ -2239,6 +2239,8 @@ TEST_F(FormatTest, FormatsNamespaces) {
   verifyFormat("namespace a { namespace b {\nint i;\n}}", Style);
 
   verifyFormat("namespace\n{\nint i;\n}", Style);
+
+  verifyFormat("namespace a { namespace b {\nnamespace\n{\nint i;\n}\n}}", Style);
 }
 
 TEST_F(FormatTest, FormatsExternC) { verifyFormat("extern \"C\" {\nint a;"); }

@@ -56,3 +56,11 @@ If `true`, a space may be inserted between the 'template' keyword and the follow
 example
 
      template<> class Foo<int> {}
+
+### BreakInheritanceBeforeComma
+Always break inheritance lists before commas and align the commas with the colon.
+Mirror of BreakConstructorInitializersBeforeComma.
+
+### InheritanceAllOnOneLineOrOnePerLine
+If the base class list doesn't fit on a line, put each base class on its own line.
+Mirror of ConstructorInitializerAllOnOneLineOrOnePerLine.

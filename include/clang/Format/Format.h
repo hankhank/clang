@@ -257,6 +257,10 @@ struct FormatStyle {
   /// the commas with the colon.
   bool BreakConstructorInitializersBeforeComma;
 
+  /// \brief Always break inheritance lists before commas and align
+  /// the commas with the colon.
+  bool BreakInheritanceBeforeComma;
+
   /// \brief Break after each annotation on a field in Java files.
   bool BreakAfterJavaFieldAnnotations;
 
@@ -382,6 +386,10 @@ struct FormatStyle {
   /// \brief Indent if a function definition or declaration is wrapped after the
   /// type.
   bool IndentWrappedFunctionNames;
+
+  /// \brief If the base class list doesn't fit on a line, put each
+  /// base class on its own line.
+  bool InheritanceAllOnOneLineOrOnePerLine;
 
   /// \brief If true, empty lines at the start of blocks are kept.
   bool KeepEmptyLinesAtTheStartOfBlocks;
@@ -601,6 +609,8 @@ struct FormatStyle {
            BreakBeforeTernaryOperators == R.BreakBeforeTernaryOperators &&
            BreakConstructorInitializersBeforeComma ==
                R.BreakConstructorInitializersBeforeComma &&
+           BreakInheritanceBeforeComma == 
+               R.BreakInheritanceBeforeComma &&
            BreakAfterJavaFieldAnnotations == R.BreakAfterJavaFieldAnnotations &&
            ColumnLimit == R.ColumnLimit && CommentPragmas == R.CommentPragmas &&
            ConstructorInitializerAllOnOneLineOrOnePerLine ==
@@ -618,6 +628,8 @@ struct FormatStyle {
            IndentCaseLabels == R.IndentCaseLabels &&
            IndentWidth == R.IndentWidth && Language == R.Language &&
            IndentWrappedFunctionNames == R.IndentWrappedFunctionNames &&
+           InheritanceAllOnOneLineOrOnePerLine ==
+               R.InheritanceAllOnOneLineOrOnePerLine &&
            KeepEmptyLinesAtTheStartOfBlocks ==
                R.KeepEmptyLinesAtTheStartOfBlocks &&
            MacroBlockBegin == R.MacroBlockBegin &&

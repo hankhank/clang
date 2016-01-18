@@ -473,7 +473,7 @@ private:
                  !Line.First->isOneOf(tok::kw_enum, tok::kw_case)) {
         if (Tok->Previous->is(tok::r_paren))
           Tok->Type = TT_CtorInitializerColon;
-        else
+        else if (!Tok->Previous->isOneOf(tok::kw_public, tok::kw_private, tok::kw_protected))
           Tok->Type = TT_InheritanceColon;
       } else if (Tok->Previous->is(tok::identifier) && Tok->Next &&
                  Tok->Next->isOneOf(tok::r_paren, tok::comma)) {
@@ -879,14 +879,13 @@ private:
            Previous = Previous->Previous)
         Previous->Type = TT_PointerOrReference;
       if (Line.MustBeDeclaration)
-        Contexts.back().IsExpression = Contexts.front().InCtorInitializer || Contexts.back().InInheritance;
+        Contexts.back().IsExpression = Contexts.front().InCtorInitializer;
     } else if (Current.Previous &&
                Current.Previous->is(TT_CtorInitializerColon)) {
       Contexts.back().IsExpression = true;
       Contexts.back().InCtorInitializer = true;
     } else if (Current.Previous &&
                Current.Previous->is(TT_InheritanceColon)) {
-      Contexts.back().IsExpression = true;
       Contexts.back().InInheritance = true;
     } else if (Current.is(tok::kw_new)) {
       Contexts.back().CanBeExpression = false;
@@ -2163,8 +2162,8 @@ bool TokenAnnotator::mustBreakBefore(const AnnotatedLine &Line,
       !Style.ConstructorInitializerAllOnOneLineOrOnePerLine)
     return true;
   if ((Right.isOneOf(TT_InheritanceComma, TT_InheritanceColon)) &&
-      Style.BreakConstructorInitializersBeforeComma &&
-      !Style.ConstructorInitializerAllOnOneLineOrOnePerLine)
+      Style.BreakInheritanceBeforeComma &&
+      !Style.InheritanceAllOnOneLineOrOnePerLine)
     return true;
   if (Right.is(tok::string_literal) && Right.TokenText.startswith("R\""))
     // Raw string literals are special wrt. line breaks. The author has made a
@@ -2310,10 +2309,10 @@ bool TokenAnnotator::canBreakBefore(const AnnotatedLine &Line,
       Style.BreakConstructorInitializersBeforeComma)
     return true;
   if (Left.is(TT_InheritanceComma) &&
-      Style.BreakConstructorInitializersBeforeComma)
+      Style.BreakInheritanceBeforeComma)
     return false;
   if (Right.is(TT_InheritanceComma) &&
-      Style.BreakConstructorInitializersBeforeComma)
+      Style.BreakInheritanceBeforeComma)
     return true;
   if ((Left.is(tok::greater) && Right.is(tok::greater)) ||
       (Left.is(tok::less) && Right.is(tok::less)))
