@@ -497,6 +497,13 @@ unsigned ContinuationIndenter::addTokenOnNewLine(LineState &State,
   if (Current.is(TT_BinaryOperator) && Current.CanBreakBefore)
     State.Stack.back().BreakBeforeParameter = false;
 
+  // FIXME: This is hacky, find a better way. We should really be breaking apart namespaces better in
+  // the format parser but because there is no step ahead we cant break apart things until we have
+  // pushed them into the current line. So here we are trying to deal with anon namespaces which you
+  // cant know until you've gone past namespace
+  if (Current.is(TT_AnonNamespace) && Style.NamespaceOnSingleLine == FormatStyle::NS_ExceptAnonymous)
+    State.Column = State.Stack.front().Indent;
+
   if (!DryRun) {
     unsigned Newlines = std::max(
         1u, std::min(Current.NewlinesBefore, Style.MaxEmptyLinesToKeep + 1));

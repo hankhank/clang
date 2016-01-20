@@ -1401,12 +1401,14 @@ void UnwrappedLineParser::parseNamespace() {
   nextToken();
   while (FormatTok->isOneOf(tok::identifier, tok::coloncolon)) {
     nextToken();
-	AnonNamespace = false;
+    AnonNamespace = false;
   }
   if (FormatTok->Tok.is(tok::l_brace)) {
     if (ShouldBreakBeforeBrace(Style, InitialToken) || 
-		(AnonNamespace && Style.NamespaceOnSingleLine == FormatStyle::NS_ExceptAnonymous))
+        (AnonNamespace && Style.NamespaceOnSingleLine == FormatStyle::NS_ExceptAnonymous))
+    {
       addUnwrappedLine();
+    }
 
     bool AddLevel = Style.NamespaceIndentation == FormatStyle::NI_All ||
                     (Style.NamespaceIndentation == FormatStyle::NI_Inner &&
@@ -1427,9 +1429,9 @@ void UnwrappedLineParser::parseNamespace() {
       FormatTok->MustBreakBefore = true;
     }
     else if (Style.NamespaceOnSingleLine == FormatStyle::NS_None)
-    {
       addUnwrappedLine();
-    }
+    else if (AnonNamespace)
+      addUnwrappedLine();
   }
   // FIXME: Add error handling.
 }

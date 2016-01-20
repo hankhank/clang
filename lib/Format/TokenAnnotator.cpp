@@ -931,6 +931,9 @@ private:
       Current.Type = determineIncrementUsage(Current);
     } else if (Current.isOneOf(tok::exclaim, tok::tilde)) {
       Current.Type = TT_UnaryOperator;
+    } else if (Current.is(tok::kw_namespace)) {
+      if (!Current.Next)
+        Current.Type = TT_AnonNamespace;
     } else if (Current.is(tok::question)) {
       if (Style.Language == FormatStyle::LK_JavaScript &&
           Line.MustBeDeclaration) {
@@ -2071,6 +2074,7 @@ bool TokenAnnotator::spaceRequiredBefore(const AnnotatedLine &Line,
   if (Left.is(TT_RegexLiteral))
     return false;
   if ((Line.startsWith(tok::kw_namespace) || 
+      Line.startsWith(TT_AnonNamespace) ||
       Line.startsWith(tok::kw_inline, tok::kw_namespace)) && 
       (Left.is(tok::l_brace) || Right.is(tok::l_brace))) // namespace single line
     return true;
@@ -2165,6 +2169,12 @@ bool TokenAnnotator::mustBreakBefore(const AnnotatedLine &Line,
   if ((Right.isOneOf(TT_InheritanceComma, TT_InheritanceColon)) &&
       Style.BreakInheritanceBeforeComma &&
       !Style.InheritanceAllOnOneLineOrOnePerLine)
+    return true;
+  if (Right.is(TT_AnonNamespace) &&
+      Style.NamespaceOnSingleLine != FormatStyle::NS_All) // namespace single line
+    return true;
+  if (Right.isOneOf(tok::kw_namespace, TT_AnonNamespace) &&
+      Left.is(tok::r_brace))
     return true;
   if (Right.is(tok::string_literal) && Right.TokenText.startswith("R\""))
     // Raw string literals are special wrt. line breaks. The author has made a

@@ -26,6 +26,7 @@ namespace clang {
 namespace format {
 
 #define LIST_TOKEN_TYPES \
+  TYPE(AnonNamespace) \
   TYPE(ArrayInitializerLSquare) \
   TYPE(ArraySubscriptLSquare) \
   TYPE(AttributeParen) \
