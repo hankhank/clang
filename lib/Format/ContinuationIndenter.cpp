@@ -48,8 +48,11 @@ static bool startsSegmentOfBuilderTypeCall(const FormatToken &Tok) {
 static bool startsNextParameter(const FormatToken &Current,
                                 const FormatStyle &Style) {
   const FormatToken &Previous = *Current.Previous;
-  if (Current.isOneOf(TT_CtorInitializerComma, TT_InheritanceComma) &&
+  if (Current.is(TT_CtorInitializerComma) &&
       Style.BreakConstructorInitializersBeforeComma)
+    return true;
+  if (Current.is(TT_InheritanceComma) &&
+      Style.BreakInheritanceBeforeComma)
     return true;
   return Previous.is(tok::comma) && !Current.isTrailingComment() &&
          (!Previous.isOneOf(TT_CtorInitializerComma, TT_InheritanceComma) ||
@@ -730,7 +733,7 @@ unsigned ContinuationIndenter::moveStateToNextToken(LineState &State,
     State.Stack.back().Indent =
         State.Column + (Style.BreakInheritanceBeforeComma ? 0 : 2);
     State.Stack.back().NestedBlockIndent = State.Stack.back().Indent;
-    if (Style.InheritanceAllOnOneLineOrOnePerLine)
+    //if (Style.InheritanceAllOnOneLineOrOnePerLine)
       State.Stack.back().AvoidBinPacking = true;
   }
   if (Current.isOneOf(TT_BinaryOperator, TT_ConditionalExpr) && Newline)

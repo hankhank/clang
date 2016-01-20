@@ -2170,6 +2170,10 @@ bool TokenAnnotator::mustBreakBefore(const AnnotatedLine &Line,
       Style.BreakInheritanceBeforeComma &&
       !Style.InheritanceAllOnOneLineOrOnePerLine)
     return true;
+  if ((Left.is(TT_InheritanceComma)) &&
+      !Style.BreakInheritanceBeforeComma &&
+      !Style.InheritanceAllOnOneLineOrOnePerLine)
+    return true;
   if (Right.is(TT_AnonNamespace) &&
       Style.NamespaceOnSingleLine != FormatStyle::NS_All) // namespace single line
     return true;
@@ -2321,12 +2325,10 @@ bool TokenAnnotator::canBreakBefore(const AnnotatedLine &Line,
   if (Right.is(TT_CtorInitializerComma) &&
       Style.BreakConstructorInitializersBeforeComma)
     return true;
-  if (Left.is(TT_InheritanceComma) &&
-      Style.BreakInheritanceBeforeComma)
-    return false;
-  if (Right.is(TT_InheritanceComma) &&
-      Style.BreakInheritanceBeforeComma)
-    return true;
+  if (Left.is(TT_InheritanceComma))
+    return !Style.BreakInheritanceBeforeComma;
+  if (Right.is(TT_InheritanceComma))
+      return Style.BreakInheritanceBeforeComma;
   if ((Left.is(tok::greater) && Right.is(tok::greater)) ||
       (Left.is(tok::less) && Right.is(tok::less)))
     return false;
