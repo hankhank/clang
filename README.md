@@ -64,3 +64,17 @@ Mirror of BreakConstructorInitializersBeforeComma.
 ### InheritanceAllOnOneLineOrOnePerLine
 If the base class list doesn't fit on a line, put each base class on its own line.
 Mirror of ConstructorInitializerAllOnOneLineOrOnePerLine.
+
+### SpacesBetweenFunctionParameter
+If ``true``, a space will be inserted between several function parameters.
+
+### DisableRegion
+Turns off clang formatting between DisableRegionBegin DisableRegionEnd regexes matches
+
+# Contributors
+
+Thanks to all those contributing!
+
+1. Andrew Hankins(hankhank)
+2. strager
+3. Kai Wolf(NewProggie)
