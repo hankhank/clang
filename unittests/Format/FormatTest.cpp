@@ -10708,8 +10708,16 @@ TEST_F(FormatTest, SpacesBetweenFunctionParameters) {
   verifyFormat("void foo(int a,double b);", Spaces);
   verifyFormat("void foo(int a,double b,char c);", Spaces);
 
+  verifyFormat("void foo(int a,double b);", Spaces);
+  verifyFormat("void foo(int a,double b,char c);", Spaces);
+
+  Spaces.SpacesBetweenFunctionParameters = true;
+
   verifyFormat("void foo(int a, double b);", Spaces);
   verifyFormat("void foo(int a, double b, char c);", Spaces);
+
+  EXPECT_EQ("void foo(int a, double b);",
+	  format("void foo(int a,double b);", Spaces));
 }
 
 TEST_F(FormatTest, TripleAngleBrackets) {
