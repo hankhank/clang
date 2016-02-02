@@ -415,10 +415,10 @@ struct FormatStyle {
   LanguageKind Language;
 
   /// \brief A regular expression matching macros that start a block.
-  std::string IgnoreBlockBegin;
+  std::string DisableRegionBegin;
 
   /// \brief A regular expression matching macros that end a block.
-  std::string IgnoreBlockEnd;
+  std::string DisableRegionEnd;
 
   /// \brief A regular expression matching macros that start a block.
   std::string MacroBlockBegin;
@@ -638,8 +638,8 @@ struct FormatStyle {
                R.InheritanceAllOnOneLineOrOnePerLine &&
            KeepEmptyLinesAtTheStartOfBlocks ==
                R.KeepEmptyLinesAtTheStartOfBlocks &&
-           IgnoreBlockBegin == R.IgnoreBlockBegin &&
-           IgnoreBlockEnd == R.IgnoreBlockEnd &&
+           DisableRegionBegin == R.DisableRegionBegin &&
+           DisableRegionEnd == R.DisableRegionEnd &&
            MacroBlockBegin == R.MacroBlockBegin &&
            MacroBlockEnd == R.MacroBlockEnd &&
            MaxEmptyLinesToKeep == R.MaxEmptyLinesToKeep &&

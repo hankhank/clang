@@ -10855,8 +10855,8 @@ TEST_F(FormatTest, DisableRegionsRegex) {
 
   FormatStyle style = getLLVMStyle();
 
-  style.IgnoreBlockBegin = "Start";
-  style.IgnoreBlockEnd = "End";
+  style.DisableRegionBegin = "Start";
+  style.DisableRegionEnd = "End";
 
   EXPECT_EQ("int i;\n"
             "int j; // Start\n"

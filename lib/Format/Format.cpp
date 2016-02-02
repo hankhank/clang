@@ -281,8 +281,8 @@ template <> struct MappingTraits<FormatStyle> {
                    Style.InheritanceAllOnOneLineOrOnePerLine);
     IO.mapOptional("KeepEmptyLinesAtTheStartOfBlocks",
                    Style.KeepEmptyLinesAtTheStartOfBlocks);
-    IO.mapOptional("IgnoreBlockBegin", Style.IgnoreBlockBegin);
-    IO.mapOptional("IgnoreBlockEnd", Style.IgnoreBlockEnd);
+    IO.mapOptional("DisableRegionBegin", Style.DisableRegionBegin);
+    IO.mapOptional("DisableRegionEnd", Style.DisableRegionEnd);
     IO.mapOptional("MacroBlockBegin", Style.MacroBlockBegin);
     IO.mapOptional("MacroBlockEnd", Style.MacroBlockEnd);
     IO.mapOptional("MaxEmptyLinesToKeep", Style.MaxEmptyLinesToKeep);
@@ -754,8 +754,8 @@ public:
         LessStashed(false), Column(0), TrailingWhitespace(0),
         SourceMgr(SourceMgr), ID(ID), Style(Style),
         IdentTable(getFormattingLangOpts(Style)), Keywords(IdentTable),
-        Encoding(Encoding), FirstInLineIndex(0), FormattingDisabled(false), IgnoreBlock(false),
-        IgnoreBlockBeginRegex(Style.IgnoreBlockBegin), IgnoreBlockEndRegex(Style.IgnoreBlockEnd), 
+        Encoding(Encoding), FirstInLineIndex(0), FormattingDisabled(false), DisableRegion(false),
+        DisableRegionBeginRegex(Style.DisableRegionBegin), DisableRegionEndRegex(Style.DisableRegionEnd), 
         MacroBlockBeginRegex(Style.MacroBlockBegin), MacroBlockEndRegex(Style.MacroBlockEnd) {
     Lex.reset(new Lexer(ID, SourceMgr.getBuffer(ID), SourceMgr,
                         getFormattingLangOpts(Style)));
@@ -1342,9 +1342,9 @@ private:
 
   bool FormattingDisabled;
 
-  bool IgnoreBlock;
-  llvm::Regex IgnoreBlockBeginRegex;
-  llvm::Regex IgnoreBlockEndRegex;
+  bool DisableRegion;
+  llvm::Regex DisableRegionBeginRegex;
+  llvm::Regex DisableRegionEndRegex;
 
   llvm::Regex MacroBlockBeginRegex;
   llvm::Regex MacroBlockEndRegex;
@@ -1365,8 +1365,8 @@ private:
       }
     }
 
-    if (IgnoreBlockBeginRegex.match(Tok.TokenText)) {
-        IgnoreBlock = true;
+    if (DisableRegionBeginRegex.match(Tok.TokenText)) {
+        DisableRegion = true;
     }
 
     if (Tok.is(tok::comment) && (Tok.TokenText == "// clang-format on" ||
@@ -1374,10 +1374,10 @@ private:
       FormattingDisabled = false;
     }
 
-    Tok.Finalized = FormattingDisabled || IgnoreBlock;
+    Tok.Finalized = FormattingDisabled || DisableRegion;
 
-    if (IgnoreBlock && (IgnoreBlockEndRegex.match(Tok.TokenText))) {
-        IgnoreBlock = false;
+    if (DisableRegion && (DisableRegionEndRegex.match(Tok.TokenText))) {
+        DisableRegion = false;
     }
  
     if (Tok.is(tok::comment) && (Tok.TokenText == "// clang-format off" ||
