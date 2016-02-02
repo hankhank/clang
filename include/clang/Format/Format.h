@@ -535,6 +535,9 @@ struct FormatStyle {
   /// commonly have different usage patterns and a number of special cases.
   unsigned SpacesBeforeTrailingComments;
 
+  /// \b If \c true, spaces will be inserted between function parameters.
+  bool SpacesBetweenFunctionParameters;
+
   /// \brief If \c true, spaces will be inserted after '<' and before '>' in
   /// template argument lists
   bool SpacesInAngles;
@@ -615,8 +618,7 @@ struct FormatStyle {
            BreakBeforeTernaryOperators == R.BreakBeforeTernaryOperators &&
            BreakConstructorInitializersBeforeComma ==
                R.BreakConstructorInitializersBeforeComma &&
-           BreakInheritanceBeforeComma == 
-               R.BreakInheritanceBeforeComma &&
+           BreakInheritanceBeforeComma == R.BreakInheritanceBeforeComma &&
            BreakAfterJavaFieldAnnotations == R.BreakAfterJavaFieldAnnotations &&
            ColumnLimit == R.ColumnLimit && CommentPragmas == R.CommentPragmas &&
            ConstructorInitializerAllOnOneLineOrOnePerLine ==
@@ -662,6 +664,8 @@ struct FormatStyle {
            SpaceBeforeParens == R.SpaceBeforeParens &&
            SpaceInEmptyParentheses == R.SpaceInEmptyParentheses &&
            SpacesBeforeTrailingComments == R.SpacesBeforeTrailingComments &&
+           SpacesBetweenFunctionParameters ==
+               R.SpacesBetweenFunctionParameters &&
            SpacesInAngles == R.SpacesInAngles &&
            SpacesInContainerLiterals == R.SpacesInContainerLiterals &&
            SpacesInCStyleCastParentheses == R.SpacesInCStyleCastParentheses &&

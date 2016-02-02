@@ -10701,6 +10701,17 @@ TEST_F(FormatTest, SpacesInAngles) {
   verifyFormat("A<A<int>>();", Spaces);
 }
 
+TEST_F(FormatTest, SpacesBetweenFunctionParameters) {
+  FormatStyle Spaces = getLLVMStyle();
+  Spaces.SpacesBetweenFunctionParameters = false;
+
+  verifyFormat("void foo(int a,double b);", Spaces);
+  verifyFormat("void foo(int a,double b,char c);", Spaces);
+
+  verifyFormat("void foo(int a, double b);", Spaces);
+  verifyFormat("void foo(int a, double b, char c);", Spaces);
+}
+
 TEST_F(FormatTest, TripleAngleBrackets) {
   verifyFormat("f<<<1, 1>>>();");
   verifyFormat("f<<<1, 1, 1, s>>>();");
