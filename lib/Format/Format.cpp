@@ -281,6 +281,8 @@ template <> struct MappingTraits<FormatStyle> {
                    Style.InheritanceAllOnOneLineOrOnePerLine);
     IO.mapOptional("KeepEmptyLinesAtTheStartOfBlocks",
                    Style.KeepEmptyLinesAtTheStartOfBlocks);
+    IO.mapOptional("IgnoreBlockBegin", Style.IgnoreBlockBegin);
+    IO.mapOptional("IgnoreBlockEnd", Style.IgnoreBlockEnd);
     IO.mapOptional("MacroBlockBegin", Style.MacroBlockBegin);
     IO.mapOptional("MacroBlockEnd", Style.MacroBlockEnd);
     IO.mapOptional("MaxEmptyLinesToKeep", Style.MaxEmptyLinesToKeep);
@@ -752,9 +754,9 @@ public:
         LessStashed(false), Column(0), TrailingWhitespace(0),
         SourceMgr(SourceMgr), ID(ID), Style(Style),
         IdentTable(getFormattingLangOpts(Style)), Keywords(IdentTable),
-        Encoding(Encoding), FirstInLineIndex(0), FormattingDisabled(false),
-        MacroBlockBeginRegex(Style.MacroBlockBegin),
-        MacroBlockEndRegex(Style.MacroBlockEnd) {
+        Encoding(Encoding), FirstInLineIndex(0), FormattingDisabled(false), IgnoreBlock(false),
+        IgnoreBlockBeginRegex(Style.IgnoreBlockBegin), IgnoreBlockEndRegex(Style.IgnoreBlockEnd), 
+        MacroBlockBeginRegex(Style.MacroBlockBegin), MacroBlockEndRegex(Style.MacroBlockEnd) {
     Lex.reset(new Lexer(ID, SourceMgr.getBuffer(ID), SourceMgr,
                         getFormattingLangOpts(Style)));
     Lex->SetKeepWhitespaceMode(true);
@@ -1340,6 +1342,10 @@ private:
 
   bool FormattingDisabled;
 
+  bool IgnoreBlock;
+  llvm::Regex IgnoreBlockBeginRegex;
+  llvm::Regex IgnoreBlockEndRegex;
+
   llvm::Regex MacroBlockBeginRegex;
   llvm::Regex MacroBlockEndRegex;
 
@@ -1359,13 +1365,21 @@ private:
       }
     }
 
+    if (IgnoreBlockBeginRegex.match(Tok.TokenText)) {
+        IgnoreBlock = true;
+    }
+
     if (Tok.is(tok::comment) && (Tok.TokenText == "// clang-format on" ||
                                  Tok.TokenText == "/* clang-format on */")) {
       FormattingDisabled = false;
     }
 
-    Tok.Finalized = FormattingDisabled;
+    Tok.Finalized = FormattingDisabled || IgnoreBlock;
 
+    if (IgnoreBlock && (IgnoreBlockEndRegex.match(Tok.TokenText))) {
+        IgnoreBlock = false;
+    }
+ 
     if (Tok.is(tok::comment) && (Tok.TokenText == "// clang-format off" ||
                                  Tok.TokenText == "/* clang-format off */")) {
       FormattingDisabled = true;

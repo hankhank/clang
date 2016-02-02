@@ -10851,6 +10851,23 @@ TEST_F(FormatTest, DisableRegions) {
                    "   int   k;"));
 }
 
+TEST_F(FormatTest, DisableRegionsRegex) {
+
+  FormatStyle style = getLLVMStyle();
+
+  style.IgnoreBlockBegin = "Start";
+  style.IgnoreBlockEnd = "End";
+
+  EXPECT_EQ("int i;\n"
+            "int j; // Start\n"
+            "  int h; // End\n"
+            "int k;",
+            format(" int  i;\n"
+                   "  int j; // Start\n"
+                   "  int h; // End\n"
+                   "   int   k;", style));
+}
+
 TEST_F(FormatTest, DoNotCrashOnInvalidInput) {
   format("? ) =");
   verifyNoCrash("#define a\\\n /**/}");
