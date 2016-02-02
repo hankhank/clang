@@ -596,6 +596,9 @@ the configuration (without a prefix: ``Auto``).
   This does not affect trailing block comments (``/**/`` - comments) as those
   commonly have different usage patterns and a number of special cases.
 
+**SpacesBetweenFunctionParameters** (``bool``)
+  If ``true``, a space will be inserted between several function parameters.
+
 **SpacesInAngles** (``bool``)
   If ``true``, spaces will be inserted after '<' and before '>' in
   template argument lists

@@ -308,6 +308,8 @@ template <> struct MappingTraits<FormatStyle> {
     IO.mapOptional("SpaceInEmptyParentheses", Style.SpaceInEmptyParentheses);
     IO.mapOptional("SpacesBeforeTrailingComments",
                    Style.SpacesBeforeTrailingComments);
+    IO.mapOptional("SpacesBetweenFunctionParameters",
+                   Style.SpacesBetweenFunctionParameters);
     IO.mapOptional("SpacesInAngles", Style.SpacesInAngles);
     IO.mapOptional("SpacesInContainerLiterals",
                    Style.SpacesInContainerLiterals);
@@ -506,6 +508,7 @@ FormatStyle getLLVMStyle() {
   LLVMStyle.ObjCSpaceBeforeProtocolList = true;
   LLVMStyle.PointerAlignment = FormatStyle::PAS_Right;
   LLVMStyle.SpacesBeforeTrailingComments = 1;
+  LLVMStyle.SpacesBetweenFunctionParameters = true;
   LLVMStyle.Standard = FormatStyle::LS_Cpp11;
   LLVMStyle.UseTab = FormatStyle::UT_Never;
   LLVMStyle.SpacesInParentheses = false;
@@ -551,6 +554,7 @@ FormatStyle getGoogleStyle(FormatStyle::LanguageKind Language) {
   GoogleStyle.ObjCSpaceBeforeProtocolList = false;
   GoogleStyle.PointerAlignment = FormatStyle::PAS_Left;
   GoogleStyle.SpacesBeforeTrailingComments = 2;
+  GoogleStyle.SpacesBetweenFunctionParameters = true;
   GoogleStyle.Standard = FormatStyle::LS_Auto;
 
   GoogleStyle.PenaltyReturnTypeOnItsOwnLine = 200;

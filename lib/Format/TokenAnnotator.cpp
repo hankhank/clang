@@ -2011,7 +2011,7 @@ bool TokenAnnotator::spaceRequiredBefore(const AnnotatedLine &Line,
       Left.isOneOf(TT_TrailingReturnArrow, TT_LambdaArrow))
     return true;
   if (Left.is(tok::comma))
-    return true;
+    return Style.SpacesBetweenFunctionParameters;
   if (Right.is(tok::comma))
     return false;
   if (Right.isOneOf(TT_CtorInitializerColon, TT_ObjCBlockLParen))
